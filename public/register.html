@@ -1,0 +1,45 @@
+<!--
+ * @Author: your name
+ * @Date: 2021-05-26 17:03:52
+ * @LastEditTime: 2021-05-26 17:05:45
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \05jieduan-nodejs\koa-test\public\register.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+  <input type="text" id="account"><br>
+  <input type="text" id="pwd"><br>
+  <button onclick="register()">注册</button>
+  <script>
+    function register() {
+      const username = document.getElementById('account');
+      const pwd = document.getElementById('pwd');
+      axios.post('http://127.0.0.1:3000/register', {
+        username: username.value,
+        password: pwd.value,
+      })
+        .then(res => {
+          let result = res.data.data;
+          // if (result == '') {
+          //   console.log('登录失败');
+          // } else {
+          //   console.log('登录成功');
+          // }
+        })
+        .catch(err => { console.log(err) })
+    }
+  </script>
+</body>
+
+</html>
