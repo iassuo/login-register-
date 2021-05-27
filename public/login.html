@@ -1,0 +1,207 @@
+<!--
+ * @Author: your name
+ * @Date: 2021-05-26 10:24:41
+ * @LastEditTime: 2021-05-27 15:33:05
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \05阶段-nodejs\koa-test\public\login.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <style>
+    table {
+      margin-top: 10px;
+      width: 400px;
+    }
+
+    tr {
+      text-align: center;
+    }
+
+    .iteminfo {
+      margin-top: 30px;
+      width: 300px;
+      height: 200px;
+      border: 1px solid #ccc;
+      display: none;
+    }
+
+    .iteminfo button {
+      display: block;
+      margin: auto;
+      margin-top: 20px;
+    }
+
+    .item-i {
+      margin: 10px;
+    }
+
+    .item-i span {
+      margin-right: 10px;
+    }
+
+    .login {
+      display: block;
+      margin-bottom: 30px;
+    }
+  </style>
+</head>
+
+<body>
+  <input type="text" id="account"><br>
+  <input type="text" id="pwd"><br>
+  <button onclick="login()" class="login">登录</button><br>
+  <!-- 点击登录还可以获取表格数据 -->
+  <button class="gettable" onclick="getTableData()">获取表格数据</button>
+  <!-- 表格区域 -->
+  <table border="1" id="table">
+    <tr>
+      <th>序号</th>
+      <th>名称</th>
+      <th>班级</th>
+      <th>分数</th>
+      <th>操作</th>
+    </tr>
+  </table>
+  <!-- 编辑信息区域 -->
+  <div class="iteminfo">
+    <div class="item-i">
+      <span>序号</span><input type="text" class="order ipt">
+    </div>
+    <div class="item-i">
+      <span>名称</span><input type="text" class="iname ipt">
+    </div>
+    <div class="item-i">
+      <span>班级</span><input type="text" class="iclass ipt">
+    </div>
+    <div class="item-i">
+      <span>分数</span><input type="text" class="iscore ipt">
+    </div>
+    <button onclick="sureModify()">确认修改</button>
+  </div>
+  <script>
+    var tableData = ''; // 获取到的所有数据
+    const username = document.getElementById('account'); // 获取账户信息输入框
+    const pwd = document.getElementById('pwd'); // 获取账户密码输入框
+    const tablebox = document.getElementById('table'); // 获取表格
+    const ibox = document.querySelector('.iteminfo'); // 获取修改框
+    const order = document.querySelector('.order'); // 序号
+    const iname = document.querySelector('.iname'); // 名称
+    const iclass = document.querySelector('.iclass'); // 班级
+    const iscore = document.querySelector('.iscore'); // 分数
+    const inputs = document.querySelectorAll('.ipt'); // 获取修改区域输入框
+    const table = document.querySelectorAll('.gettable'); // 获取 获取表格数据按钮
+    let tds = '';
+    // 登录
+    function login() {
+      axios.post('http://127.0.0.1:3000/login', {
+        username: username.value,
+        password: pwd.value,
+      })
+        .then(res => {
+          let result = res.data.data; // 登录后返回的数据 就是在数据库中匹配到的信息
+          console.log(result);
+          if (result == '') {
+            console.log('登录失败');
+          } else {
+            console.log('登录成功');
+          }
+        })
+        .catch(err => { console.log(err) })
+    }
+
+    // 获取表格数据
+    function getTableData() {
+      axios.post('http://127.0.0.1:3000/gettable')
+        .then(res => {
+          let tableD = res.data.data; // 获取的表格数据
+          tableData = tableD;
+          showTableData(tableD); // 渲染列表
+          var td = document.querySelectorAll('.first');
+          tds = td;
+          console.log(td.parentNode);
+        }).catch(err => { console.log(err) })
+    }
+
+    // 显示列表
+    function showTableData(_val) {
+      tableData.forEach(item => {
+        let trnode = document.createElement('tr');
+        trnode.setAttribute('class', 'itr');
+        trnode.innerHTML = `
+          <td id="first">${item.id + ''}</td>
+          <td>${item.name}</td>
+          <td>${item.class}</td>
+          <td>${item.score}</td>
+          <td>
+            <button onclick="modify(${item.id})">修改</button>
+            <button onclick="Delete(this, ${item.id})">删除</button>            
+          </td>
+        `;
+        tablebox.appendChild(trnode);
+      })
+    }
+
+    // 修改按钮
+    function modify(_id) {
+      ibox.style.display = 'block';
+      tableData.forEach(item => {
+        if (_id == item.id) {
+          order.value = item.id;
+          iname.value = item.name;
+          iclass.value = item.class;
+          iscore.value = item.score;
+        }
+      })
+    }
+
+    // 监听输入框数据
+    inputs.forEach(item => {
+      item.addEventListener('change', function (e) {
+        item.value = e.target.value;
+      })
+    })
+
+    // 确认修改
+    function sureModify() {
+      let i = order.value;
+      let n = iname.value;
+      let c = iclass.value;
+      let s = iscore.value; 
+      axios.post('http://127.0.0.1:3000/settable', {
+        id: parseInt(i),
+        name: n,
+        class: c,
+        score: parseInt(s)
+      }).then(res => {
+        tds.forEach(item => {
+          item.parentNode.remove()
+        })
+        getTableData();
+      })
+    }
+
+    // 删除
+    function Delete(_this, _id) {
+      console.log(_this);
+      axios.post('http://127.0.0.1:3000/deltableitem', {
+        id: parseInt(_id)
+      });
+      tableData.forEach(item => {
+        console.log(_this);
+        if (_id == item.id) {
+          _this.parentNode.parentNode.remove();
+        }
+      })
+    }
+  </script>
+</body>
+
+</html>

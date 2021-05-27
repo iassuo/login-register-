@@ -1,0 +1,36 @@
+{
+<<<<<<< HEAD
+  "name": "demo",
+=======
+  "name": "hapi-demo",
+>>>>>>> 65139f9 (teachers hapi-demo)
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+<<<<<<< HEAD
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon main"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "koa": "^2.13.1",
+    "koa-bodyparser": "^4.3.0",
+    "koa-cors": "0.0.16",
+    "koa-router": "^10.0.0",
+    "mysql": "^2.18.1"
+=======
+    "dev": "nodemon main",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@hapi/hapi": "^20.1.3",
+    "axios": "^0.21.1",
+    "hapi-plugin-mysql": "^7.2.4"
+>>>>>>> 65139f9 (teachers hapi-demo)
+  }
+}
